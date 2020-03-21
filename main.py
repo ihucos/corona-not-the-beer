@@ -3,7 +3,7 @@
 
 import os
 
-from flask import Flask, request
+from flask import Flask, request, Response
 from whitenoise import WhiteNoise
 
 app = Flask(__name__)
@@ -11,9 +11,15 @@ app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
 
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+
+# I use that for local development
 if not DATABASE_URL:
     import sqlite3
-    conn = sqlite3.connect(':memory:')
+    conn = sqlite3.connect(
+    ':memory:',
+    check_same_thread=False)
+
+
 else:
     import psycopg2
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
@@ -21,8 +27,8 @@ else:
 
 cursor = conn.cursor()
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS Entry (
-  session varchar(255),
+CREATE TABLE IF NOT EXISTS entry (
+  userid varchar(255),
   timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
   plz varchar(12),
   status varchar(255)  /* example: "fever,healthy,sniff"*/
@@ -31,10 +37,13 @@ CREATE TABLE IF NOT EXISTS Entry (
 cursor.close()
 
 
-@app.route('/poll', methods=["POST"])
+@app.route('/', methods=["POST", "GET"])
 def poll():
-    status_set = set([])
 
+    if request.method == "GET":
+        return app.send_static_file('form.html')
+
+    status_set = set([])
     for key, value in request.form.items():
 
         if key == 'throaty' and value:
@@ -63,15 +72,34 @@ def poll():
 
     cursor = conn.cursor()
     cursor.execute('''
-    INSERT INTO table_name (session, plz, status)
+    INSERT INTO entry (userid, plz, status)
     VALUES (?, ?, ?);''',
     [
-        request.form.get("session"),
+        request.form.get("userid"),
         request.form.get("plz"),
         status_set_repr,
 
     ])
     cursor.close()
+
+    return app.send_static_file('success.html')
+
+
+@app.route('/data.csv', methods=["GET"])
+def download():
+    cursor = conn.cursor()
+    cursor.execute('SELECT userid, timestamp, plz, status FROM entry')
+    def generate():
+        yield "userid;timestamp;plz;status\n"
+        while True:
+            many = cursor.fetchmany()
+            if not many:
+                break
+            for entry in many:
+                userid, timestamp, plz, status = (i or '' for i in entry)
+                yield f"{userid};{timestamp};{plz};{status}\n"
+        cursor.close()
+    return Response(generate(), mimetype='text/csv')
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=True)
