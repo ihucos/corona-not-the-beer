@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Hello, world!</title>
+  </head>
+
+  <style>
+  label {
+    font-size: 4em;
+  } 
+
+  #zip {
+    font-size: 2rem;
+  }
+
+  #submit {
+    background-color: #5598d4;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    -webkit-appearance: none;
+
+    margin-top: 2em;
+    margin-bottom: 1.5em;
+  }
+
+  hr { display: block; height: 1px;
+    border: 0; border-top: 1px solid #ccc;
+    margin: 1em 0; padding: 0; }
+
+  </style>
+
+  <body>
+
+    <center>
+    <div class="container">
+      <h1>Corona-Datenerfassung</h1>
+
+      <p>Heute f&uuml;hle ich mich</p>
+      <form>
+        <label>
+          <input type="radio" name="feel">💥
+        </label>
+        <label>
+          <input type="radio" name="feel">🙁
+        </label>
+        <label>
+          <input type="radio" name="feel">😐
+        </label>
+        <label>
+          <input type="radio" name="feel">🙂
+        </label>
+
+     <hr />
+     <p>Halskratzen?</p>
+        <label>
+          <input type="checkbox" name="scratching">🧣
+        </label>
+
+     <hr />
+     <p>Schnupfen?</p>
+        <label>
+          <input type="checkbox" name="sniff">🤧
+        </label>
+
+     <hr />
+     <p>&Uuml;ebelkeit?</p>
+        <label>
+          <input type="checkbox" name="nausea">🥴
+        </label>
+
+     <hr />
+     <p>Mehr als 37° grad gemessen?</p>
+        <label>
+          <input type="checkbox" name="fever">🤒
+        </label>
+
+
+     <hr />
+     <p>Ich f&uuml;hle mich gesund</p>
+        <label>
+          <input type="checkbox" name="healthy">👍
+        </label>
+
+    
+     <hr />
+     <p>Postleizahl (optional)</p>
+        <label>
+          <input size=7 id="zip" type="number" name="zip">
+        </label>
+
+
+     <p>
+    <input id="submit" type="submit" value="Abschicken" />
+    </p>
+
+      </form>
+</div>
+
+  </body>
+</html>
