@@ -3,7 +3,7 @@
 
 import os
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, make_response
 from whitenoise import WhiteNoise
 
 app = Flask(__name__)
@@ -39,6 +39,9 @@ cursor.close()
 
 @app.route('/', methods=["POST", "GET"])
 def poll():
+
+    #if request.cookies.get("block"):
+        #return app.send_static_file('success.html')
 
     if request.method == "GET":
         return app.send_static_file('form.html')
@@ -82,7 +85,9 @@ def poll():
     ])
     cursor.close()
 
-    return app.send_static_file('success.html')
+    resp = make_response(app.send_static_file('success.html'))
+    resp.set_cookie('block', '1', max_age=60*60*12)
+    return resp 
 
 
 @app.route('/data.csv', methods=["GET"])
